@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>이데아 & 삼데아 공식 홈페이지</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5; --primary-hover: #4338ca;
+            --bg-page: #f8fafc; --bg-card: #ffffff;
+            --text-main: #1e293b; --text-sub: #64748b;
+            --border: #e2e8f0; --shadow: 0 4px 10px rgba(0,0,0,0.08);
+            --radius: 12px;
+            --kakao: #fee500; --kakao-text: #3c1e1e;
+            --guild-main: #ea580c; --guild-sub: #059669;
+            --danger: #ef4444; --success: #10b981; --warning: #f59e0b;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg-page); color: var(--text-main); margin: 0; padding: 0; font-size: 15px; }
+        
+        /* [공통] 버튼 */
+        button { cursor: pointer; font-weight: 600; border: none; border-radius: 8px; transition: 0.2s; padding: 10px 16px; font-size: 14px; }
+        button:active { transform: scale(0.97); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-kakao { background: var(--kakao); color: var(--kakao-text); font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; max-width: 300px; padding: 15px; font-size: 16px; text-decoration: none; border-radius: 50px; box-shadow: 0 4px 6px rgba(254, 229, 0, 0.4); }
+        .btn-kakao:hover { background: #fdd835; }
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); }
+        
+        /* [공통] 입력폼 */
+        input, select, textarea { padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: white; width: 100%; }
+        input:focus, textarea:focus { border-color: var(--primary); }
+
+        /* =========================================
+           [PART 1] 메인 페이지 (랜딩 페이지) 스타일
+           ========================================= */
+        #landingPage {
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white;
+            text-align: center; padding: 20px; position: relative;
+        }
+        .landing-header { width: 100%; display: flex; justify-content: flex-end; padding: 10px; position: absolute; top: 0; right: 0; }
+        .btn-login { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); font-size: 12px; padding: 6px 12px; border-radius: 20px; }
+        
+        .poster-area {
+            flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; 
+            max-width: 1000px; /* 포스터 영역 너비 */
+            gap: 30px; margin-top: 40px;
+        }
+        .main-poster {
+            width: 100%; height: auto; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-height: 80vh; /* 포스터 높이 */
+            object-fit: contain; background: #334155; display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .main-poster img { width: 100%; height: auto; display: block; }
+        .empty-poster { padding: 40px; color: #94a3b8; font-size: 14px; }
+
+        .join-area { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 40px; }
+        .join-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 5px; color: #e2e8f0; }
+
+        /* =========================================
+           [PART 2] 관리자 대시보드 스타일
+           ========================================= */
+        #dashboardContainer { display: none; max-width: 1400px; margin: 0 auto; padding: 15px; }
+        
+        .header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: var(--bg-card); padding: 15px 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; }
+        h1 { margin: 0; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
+        .admin-badge { background: var(--primary); color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; vertical-align: middle; }
+        .controls { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+        .controls select { width: auto; padding: 8px 12px; }
+
+        /* 탭 & 카드 */
+        .tabs { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 15px; padding-bottom: 5px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .tabs::-webkit-scrollbar { display: none; }
+        .tab-button { background: white; color: var(--text-sub); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
+        .tab-button.active { background: var(--primary); color: white; border-color: var(--primary); font-weight: 700; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); }
+        .tab-content { display: none; animation: fadeIn 0.3s; } .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--bg-card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); display: flex; flex-direction: column; height: 100%; }
+        .card h4 { margin: 0 0 15px 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; font-size: 1.1rem; color: var(--text-main); }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; margin-top: 15px; }
+
+        /* 테이블 스타일 */
+        .table-wrapper { 
+            background: white; 
+            border-radius: var(--radius); 
+            box-shadow: var(--shadow); 
+            overflow: hidden; 
+            border: 1px solid var(--border); 
+            margin-bottom: 20px; 
+            position: relative;
+        }
+
+        .table-scroll { 
+            overflow-x: auto; 
+            overflow-y: auto;
+            max-height: 70vh; 
+            -webkit-overflow-scrolling: touch; 
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0; 
+            min-width: 800px; 
+        }
+
+        /* 셀 공통 */
+        th, td { 
+            padding: 10px 8px; 
+            border-bottom: 1px solid var(--border); 
+            text-align: center; 
+            white-space: nowrap; 
+            font-size: 13px; 
+            background-color: #ffffff; 
+        }
+
+        /* 헤더 고정 로직 */
+        th { 
+            background-color: #f1f5f9; 
+            color: #475569; 
+            font-weight: 700;
+            position: sticky; 
+            height: 40px; 
+            box-shadow: 0 1px 0 #cbd5e1;
+        }
+        thead tr:nth-child(1) th { top: 0; z-index: 20; }
+        thead tr:nth-child(2) th { top: 40px; z-index: 20; }
+        .col-fixed-id { 
+            position: sticky; left: 0; z-index: 30 !important; 
+            background-color: #ffffff; 
+            border-right: 2px solid var(--border); 
+            min-width: 90px; font-weight: bold; color: var(--text-main);
+        }
+        th.col-fixed-id { 
+            z-index: 40 !important; background-color: #f1f5f9; top: 0;
+        }
+
+        input.num-input { 
+            width: 100%; min-width: 70px; text-align: right; 
+            padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; 
+        }
+        input.num-input:focus { border-color: var(--primary); background: #f0f9ff; }
+
+        .war-table th, .war-table td { padding: 8px; }
+        .war-elite { background-color: #fff7ed; border-left: 3px solid var(--guild-main); }
+        .war-normal { border-left: 3px solid #cbd5e1; }
+        .war-target { background-color: #ecfdf5 !important; }
+        .squad-row { display: flex; gap: 5px; margin-bottom: 5px; font-size: 13px; align-items: center; }
+
+        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 10000; display: none; flex-direction: column; justify-content: center; align-items: center; font-size: 1.2rem; color: var(--primary); font-weight: bold; }
+
+        @media (max-width: 768px) {
+            .header-row { flex-direction: column; align-items: stretch; }
+            .controls { justify-content: space-between; }
+            .controls select { flex: 1; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loadingOverlay"><div>🔄 데이터 로딩중...</div></div>
+
+<div id="landingPage">
+    <div class="landing-header">
+        <button onclick="requestLogin()" class="btn-login">🔒 관리자 로그인</button>
+    </div>
+    
+    <div class="poster-area">
+        <h2 style="margin:0; font-size:2rem; font-weight:900; letter-spacing:-1px;">이데아 & 삼데아</h2>
+        <h2 style="margin:0; font-size:1.5rem; font-weight:600; letter-spacing:-1px;">빠르고 길게 즐겁게</h2>
+        <h2 style="margin:0; font-size:1.5rem; font-weight:600; letter-spacing:-1px;">함께 성장하는 최고의 문파</h2>
+        
+        <div class="main-poster" id="posterDisplay">
+            <div class="empty-poster">로딩중...</div>
+        </div>
+    </div>
+
+    <div class="join-area">
+        <span class="join-title">지금 바로 함께하세요!</span>
+        <a href="#" id="kakaoLinkDisplay" class="btn-kakao" target="_blank">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-4.97 0-9 3.185-9 7.115 0 2.557 1.707 4.8 4.27 6.054-.188.702-.682 2.545-.78 2.94-.122.49.178.483.375.352.155-.103 2.48-1.7 3.48-2.378.525.076 1.066.115 1.616.115 4.97 0 9-3.186 9-7.116S16.97 3 12 3z"/></svg>
+            이데아 / 삼데아 연합 가입 신청하기
+        </a>
+    </div>
+</div>
+
+<div id="dashboardContainer">
+    <div class="header-row">
+        <h1>🛡️ 관리자 모드 <span class="admin-badge">ADMIN</span></h1>
+        <div class="controls">
+            <button onclick="viewMainPage()" class="btn-outline" style="margin-right:5px; border-color:#10b981; color:#10b981;">👀 메인화면 점검</button>
+            <button onclick="logout()" class="btn-outline" style="margin-right:10px;">🚪 나가기</button>
+            <select id="yearSelect"></select>
+            <select id="monthSelect"></select>
+            <select id="weekSelect"></select>
+            <button onclick="fetchServerData()" class="btn-success">🔄 불러오기</button>
+            <button onclick="resetCurrentWeekData()" class="btn-danger">⚠️ 초기화</button>
+        </div>
+    </div>
+
+    <div class="dashboard-grid" style="margin-top:0; margin-bottom:20px;">
+        <div class="card" style="border-left: 5px solid var(--primary);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <h4 style="margin:0; color:var(--primary);">🏠 홈페이지 설정</h4>
+                <button onclick="saveNoticesToServer()" class="btn-primary" style="padding:2px 10px; font-size:12px;">설정 저장</button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <input type="text" id="configPosterUrl" placeholder="홍보 포스터 이미지 URL (https://...)" style="font-family:monospace;">
+                <input type="text" id="configChatLink" placeholder="카카오톡 오픈채팅방 링크" style="font-family:monospace;">
+                <p style="font-size:11px; color:#888; margin:0;">* 저장 후 [나가기]를 하면 메인 화면에 적용됩니다.</p>
+            </div>
+        </div>
+        
+        <div class="card" style="border-left: 5px solid var(--guild-main);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <h4 style="margin:0; color:var(--guild-main);">🦁 이데아/삼데아 공지</h4>
+                <button onclick="saveNoticesToServer()" class="btn-primary" style="padding:2px 10px; font-size:12px;">공지 저장</button>
+            </div>
+            <textarea id="noticeMain" class="input-textarea" style="height:60px; margin-bottom:5px;" placeholder="이데아 공지..."></textarea>
+            <textarea id="noticeSub" class="input-textarea" style="height:60px;" placeholder="삼데아 공지..."></textarea>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-button active" onclick="openTab('inputTab')">📝 기록부</button>
+        <button class="tab-button" onclick="openTab('rankingTab')">🏆 랭킹</button>
+        <button class="tab-button" onclick="openTab('warTab')">⚔️ 문파대전</button>
+        <button class="tab-button" onclick="openTab('squadTab')">🛡️ 조 편성</button>
+        <button class="tab-button" onclick="openTab('memberTab')">👥 멤버</button>
+    </div>
+
+    <div id="inputTab" class="tab-content active">
+        <div class="card" style="margin-bottom:20px; flex-direction:row; justify-content:space-between; align-items:center;">
+            <label style="font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:5px;">
+                <input type="checkbox" id="todayOnlyToggle" onchange="renderAllTables()" style="width:18px; height:18px;">
+                👀 오늘만 보기
+            </label>
+            <button onclick="saveWeeklyDataToServer()" class="btn-primary">💾 서버 저장</button>
+        </div>
+
+        <h3 style="color:var(--guild-main);">🦁 이데아 (본가)</h3>
+        <div class="table-wrapper"><div class="table-scroll"><table id="inputTableMain"></table></div></div>
+        
+        <h3 style="color:var(--guild-sub); margin-top:30px;">🐯 삼데아 (속가)</h3>
+        <div class="table-wrapper"><div class="table-scroll"><table id="inputTableSub"></table></div></div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h4>🚀 스마트 OCR</h4>
+                <div style="display:flex; gap:5px; margin-bottom:10px;">
+                    <select id="ocrDataType" style="flex:1;">
+                        <option value="daily_battle">대전</option>
+                        <option value="stage">스테이지</option>
+                    </select>
+                    <select id="ocrDaySelect" style="width:80px;"></select>
+                </div>
+                <textarea id="ocrInputArea" class="input-textarea" style="height:100px;" placeholder="[이름]만 입력 ➡ 전날 복사&#13;&#10;[이름 점수] ➡ 강제 입력"></textarea>
+                <button onclick="processOCRData()" class="btn-primary full-btn">데이터 적용</button>
+            </div>
+            <div class="card">
+                <h4 style="color:var(--danger);">⚡ 미참 일괄 처리</h4>
+                <div style="display:flex; gap:5px; margin-bottom:10px;">
+                    <select id="batchTypeSelect" style="flex:1;"><option value="contrib">공적 (목표:3)</option><option value="attend">출석 (목표:1)</option></select>
+                    <select id="batchDaySelect" style="width:80px;"></select>
+                </div>
+                <textarea id="batchInputArea" class="input-textarea" style="height:100px;" placeholder="이름 (공백 구분)"></textarea>
+                <button onclick="processBatchData()" class="btn-danger full-btn">일괄 적용</button>
+            </div>
+            <div class="card">
+                <h4 style="color:var(--warning);">📢 공유 텍스트</h4>
+                <select id="kakaoDaySelect" style="margin-bottom:10px;"></select>
+                <textarea id="kakaoResultArea" class="input-textarea" style="height:100px;"></textarea>
+                <div style="display:flex; gap:5px; margin-top:auto;">
+                    <button onclick="generateKakaoText()" class="btn-warning" style="flex:1;">생성</button>
+                    <button onclick="copyKakaoText('kakaoResultArea')" class="btn-outline" style="flex:1;">복사</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rankingTab" class="tab-content">
+        <div class="card" style="margin-bottom:20px; flex-direction:row; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <h2 style="margin:0; font-size:1.2rem;">🏆 월간 랭킹</h2>
+            <div style="display:flex; gap:5px; align-items:center;">
+                <select id="targetRankingMonth" style="width:80px; font-weight:bold; border-color:var(--primary); color:var(--primary);"></select>
+                <button onclick="calculateMonthlyRanking()" class="btn-primary">📊 산출</button>
+                <button onclick="calculateGrowthAnalysis()" class="btn-success">📈 성장</button>
+            </div>
+        </div>
+        <div class="table-wrapper"><div class="table-scroll">
+            <table id="rankingTable">
+                <thead><tr><th>순위</th><th>소속</th><th class="col-fixed-id">ID</th><th>스테이지</th><th>대전(월)</th><th>공적(월)</th><th>출석(월)</th></tr></thead>
+                <tbody id="rankingTableBody"><tr><td colspan="7" style="padding:20px;">[산출] 버튼을 눌러주세요.</td></tr></tbody>
+            </table>
+        </div></div>
+        
+        <div class="dashboard-grid">
+            <div class="card">
+                <h4>📉 이데아 저조자</h4>
+                <div class="limit-btn-group" style="margin-bottom:10px;">
+                    <button onclick="changeLowLimit(5)" id="btnLimit5" class="btn-outline" style="padding:2px 5px; font-size:11px;">5명</button>
+                    <button onclick="changeLowLimit(10)" id="btnLimit10" class="btn-outline" style="padding:2px 5px; font-size:11px;">10명</button>
+                </div>
+                <ul id="lowPerformerListMain" class="low-list" style="padding:0; list-style:none;"></ul>
+                <div style="display:flex; gap:5px; margin-top:auto;">
+                    <button onclick="generateLowPerformerText('Main')" class="btn-warning" style="flex:1;">생성</button>
+                    <button onclick="copyKakaoText('lowResultMain')" class="btn-outline" style="flex:1;">복사</button>
+                </div>
+                <textarea id="lowResultMain" style="opacity:0; height:0;"></textarea>
+            </div>
+            <div class="card">
+                <h4>📉 삼데아 저조자</h4>
+                <ul id="lowPerformerListSub" class="low-list" style="padding:0; list-style:none; margin-top:33px;"></ul>
+                <div style="display:flex; gap:5px; margin-top:auto;">
+                    <button onclick="generateLowPerformerText('Sub')" class="btn-warning" style="flex:1;">생성</button>
+                    <button onclick="copyKakaoText('lowResultSub')" class="btn-outline" style="flex:1;">복사</button>
+                </div>
+                <textarea id="lowResultSub" style="opacity:0; height:0;"></textarea>
+            </div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card">
+                <h4>📢 랭킹 텍스트</h4>
+                <textarea id="rankingKakaoResult" class="input-textarea"></textarea>
+                <div style="display:flex; gap:5px; margin-top:10px;">
+                    <button onclick="generateRankingKakaoText()" class="btn-warning" style="flex:1;">생성</button>
+                    <button onclick="copyKakaoText('rankingKakaoResult')" class="btn-outline" style="flex:1;">복사</button>
+                </div>
+            </div>
+            <div class="card">
+                <h4>📈 성장 리포트</h4>
+                <textarea id="growthKakaoResult" class="input-textarea" style="height:250px; font-family:monospace; font-size:13px;"></textarea>
+                <button onclick="copyKakaoText('growthKakaoResult')" class="btn-outline full-btn">복사</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="warTab" class="tab-content">
+        <div class="card" style="background:#1e293b; color:white; border:none; margin-bottom:20px; flex-direction:row; justify-content:space-between; align-items:center;">
+            <div>
+                <span style="font-size:13px; opacity:0.8;">예상 점수</span><br>
+                <span style="font-size:1.8rem; font-weight:800; color:#facc15;" id="totalWarScore">0</span>
+            </div>
+            <button onclick="saveWarData()" class="btn-primary" style="background:#3b82f6;">💾 전략 저장</button>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h4>🏰 성 관리 & OCR</h4>
+                <div style="display:flex; gap:5px; margin-bottom:15px; flex-wrap:wrap;">
+                    <select id="newCastleType" style="flex:1;"><option value="Elite">🔥 정예</option><option value="Normal" selected>🛡️ 일반</option></select>
+                    <input type="text" id="newCastleName" placeholder="이름" style="flex:1;">
+                    <button onclick="addWarCastleManual()" class="btn-success">➕</button>
+                </div>
+                <div style="margin-bottom:15px;">
+                    <textarea id="warOcrInput" class="input-textarea" style="height:80px;" placeholder="북피 118..."></textarea>
+                    <button onclick="processWarOCR()" class="btn-primary full-btn">점수 적용 (만)</button>
+                </div>
+                <div class="table-wrapper" style="max-height:300px; overflow-y:auto;">
+                    <table class="war-table">
+                        <thead><tr><th>V</th><th>이름</th><th>타입</th><th>점수</th><th>값</th></tr></thead>
+                        <tbody id="warTableBody"></tbody>
+                    </table>
+                </div>
+                <div style="display:flex; gap:5px; justify-content:flex-end;">
+                    <button onclick="removeSelectedWarCastles()" class="btn-danger">삭제</button>
+                    <button onclick="resetWarData()" class="btn-outline">초기화</button>
+                </div>
+            </div>
+
+            <div class="card" style="border:2px solid var(--primary);">
+                <h4 style="color:var(--primary);">⚖️ AI 전략 분석</h4>
+                <div style="background:var(--bg-page); padding:10px; border-radius:8px; margin-bottom:15px;">
+                    <label style="font-weight:bold;">📅 기준 날짜</label>
+                    <select id="warRefDate"></select>
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="font-weight:bold; font-size:13px;">🔥 예비 전력 (제외)</label>
+                    <input type="text" id="reserveMain" placeholder="🦁 이데아 예비군 (공백 구분)" style="margin-bottom:5px;">
+                    <input type="text" id="reserveSub" placeholder="🐯 삼데아 예비군 (공백 구분)">
+                </div>
+                <div style="display:flex; gap:5px; margin-bottom:10px;">
+                    <button onclick="analyzeWarAI('Main')" class="btn-outline" style="flex:1; border-color:var(--guild-main); color:var(--guild-main);">🦁 이데아</button>
+                    <button onclick="analyzeWarAI('Sub')" class="btn-outline" style="flex:1; border-color:var(--guild-sub); color:var(--guild-sub);">🐯 삼데아</button>
+                </div>
+                <button onclick="analyzeWarIntegrated()" class="btn-primary full-btn" style="margin-bottom:15px; font-size:1.1em;">🚀 통합 전략 수립 (중복X)</button>
+                <textarea id="warStrategyResult" class="input-textarea" style="height:300px; background:#f8fafc; font-family:monospace;"></textarea>
+                <button onclick="copyKakaoText('warStrategyResult')" class="btn-success full-btn">결과 복사</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="squadTab" class="tab-content">
+        <div class="card" style="margin-bottom:20px;">
+            <label>📅 기준 요일: <select id="squadDaySelect" style="width:auto;"></select></label>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card" style="border-top:4px solid var(--guild-main);">
+                <h4>🦁 본가 설정</h4>
+                <input type="text" id="excludeMain" placeholder="제외 인원" style="margin-bottom:10px;">
+                <div id="squadConfigContainerMain"></div>
+                <div style="margin-top:10px; display:flex; gap:5px;">
+                    <button onclick="addSquadRow('Main')" class="btn-success">➕</button>
+                    <button onclick="removeSquadRow('Main')" class="btn-outline">➖</button>
+                </div>
+            </div>
+            <div class="card" style="border-top:4px solid var(--guild-sub);">
+                <h4>🐯 속가 설정</h4>
+                <input type="text" id="excludeSub" placeholder="제외 인원" style="margin-bottom:10px;">
+                <div id="squadConfigContainerSub"></div>
+                <div style="margin-top:10px; display:flex; gap:5px;">
+                    <button onclick="addSquadRow('Sub')" class="btn-success">➕</button>
+                    <button onclick="removeSquadRow('Sub')" class="btn-outline">➖</button>
+                </div>
+            </div>
+        </div>
+        <button onclick="generateSquadCustom()" class="btn-primary full-btn" style="margin-top:20px;">⚖️ 조 편성 결과 생성</button>
+        <div class="card" style="margin-top:20px;">
+            <h4>📋 결과</h4>
+            <textarea id="squadResultArea" class="input-textarea" style="height:200px;"></textarea>
+            <button onclick="copyKakaoText('squadResultArea')" class="btn-success full-btn">복사</button>
+        </div>
+    </div>
+
+    <div id="memberTab" class="tab-content">
+        <div class="card" style="margin-bottom:20px; background:#fff7ed; border-color:#ffedd5; flex-direction:row; justify-content:space-between; align-items:center;">
+            <span style="color:#c2410c; font-weight:bold;">⚠️ 변경 후 저장 필수</span>
+            <button onclick="saveMembersToServer()" class="btn-primary">💾 저장</button>
+        </div>
+        <div class="card" style="margin-bottom:20px;">
+            <h4>➕ 멤버 추가</h4>
+            <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                <input type="text" id="newMemberName" placeholder="닉네임" style="flex:1;">
+                <input type="date" id="newMemberJoinDate" style="width:130px;">
+                <select id="newMemberGroup"><option value="Main">이데아</option><option value="Sub">삼데아</option></select>
+                <button onclick="addMember()" class="btn-success">추가</button>
+            </div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="card" style="border-top:4px solid var(--guild-main);">
+                <h4>🦁 이데아 (<span id="mainCount">0</span>)</h4>
+                <ul id="memberListMain" class="low-list" style="padding:0; list-style:none;"></ul>
+            </div>
+            <div class="card" style="border-top:4px solid var(--guild-sub);">
+                <h4>🐯 삼데아 (<span id="subCount">0</span>)</h4>
+                <ul id="memberListSub" class="low-list" style="padding:0; list-style:none;"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="returnAdminBtn" style="display:none; position:fixed; bottom:20px; right:20px; z-index:9999;">
+    <button onclick="returnToAdmin()" class="btn-danger" style="box-shadow: 0 4px 15px rgba(0,0,0,0.4); padding: 12px 24px; border-radius: 50px; font-size: 16px; border: 2px solid white;">
+        ⚙️ 관리자 화면 복귀
+    </button>
+</div>
+
+<script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzQbn26FfmrwNTN8FiqqP4_4ybyS8LBz91ql4ACli3-vwBfk3gr2Eag8AC0o4W_igKZHg/exec";
+    
+    let members = [], weeklyData = {}, monthlyRankingData = [];
+    let warData = [];
+    let currentYear, currentMonth, currentWeek;
+    let squadCounts = { Main: 0, Sub: 0 };
+    let currentLowLimit = 5;
+    let landingConfig = { posterUrl: '', chatLink: '' };
+
+    const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    const DAYS_KR = ['월', '화', '수', '목', '금', '토', '일'];
+
+    function showLoading(show) { document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
+
+    window.onload = function() {
+        try {
+            console.log("App v15.0 Started");
+            initSelectors();
+            
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                showDashboard();
+            } else {
+                fetchInitialDataForLanding();
+            }
+
+            // 조편성 초기화
+            addSquadRow('Main', '1조', 800000); addSquadRow('Main', '2조', 800000);
+            addSquadRow('Sub', '1조', 400000); addSquadRow('Sub', '2조', 400000);
+        } catch (e) { alert("초기화 오류: " + e.message); }
+    };
+
+    function requestLogin() {
+        const pw = prompt("관리자 비밀번호를 입력하세요:");
+        if (pw === "880921") { 
+            sessionStorage.setItem('isLoggedIn', 'true');
+            showDashboard();
+            fetchServerData(); 
+        } else if (pw !== null) {
+            alert("비밀번호가 일치하지 않습니다.");
+        }
+    }
+
+    function logout() {
+        if(confirm("관리자 모드에서 나가시겠습니까?")) {
+            sessionStorage.removeItem('isLoggedIn');
+            location.reload();
+        }
+    }
+
+    function viewMainPage() {
+        document.getElementById('dashboardContainer').style.display = 'none';
+        document.getElementById('landingPage').style.display = 'flex';
+        document.getElementById('returnAdminBtn').style.display = 'block';
+    }
+
+    function returnToAdmin() {
+        document.getElementById('landingPage').style.display = 'none';
+        document.getElementById('dashboardContainer').style.display = 'block';
+        document.getElementById('returnAdminBtn').style.display = 'none';
+    }
+
+    function showDashboard() {
+        document.getElementById('landingPage').style.display = 'none';
+        document.getElementById('dashboardContainer').style.display = 'block';
+    }
+
+    async function fetchInitialDataForLanding() {
+        try {
+            const y = document.getElementById('yearSelect').value;
+            const m = document.getElementById('monthSelect').value;
+            const w = document.getElementById('weekSelect').value;
+            const key = `${y}_${m}_${w}`;
+            const res = await fetch(`${GAS_URL}?key=${key}`);
+            const data = await res.json();
+            if (data.notice) {
+                if (data.notice.posterUrl) document.getElementById('posterDisplay').innerHTML = `<img src="${data.notice.posterUrl}" alt="메인 포스터">`;
+                if (data.notice.chatLink) document.getElementById('kakaoLinkDisplay').href = data.notice.chatLink;
+            }
+        } catch(e) { console.log("랜딩 데이터 로드 실패", e); }
+    }
+
+    async function fetchServerData() {
+        showLoading(true);
+        try {
+            currentYear = document.getElementById('yearSelect').value;
+            currentMonth = document.getElementById('monthSelect').value;
+            currentWeek = document.getElementById('weekSelect').value;
+            const key = `${currentYear}_${currentMonth}_${currentWeek}`;
+
+            const res = await fetch(`${GAS_URL}?key=${key}`);
+            const data = await res.json();
+            
+            members = (data.members || []).map(m => ({ ...m, joinDate: m.joinDate || '' }));
+            weeklyData = data.weeklyData || {};
+            warData = data.warData || []; 
+
+            if (data.notice) {
+                document.getElementById('noticeMain').value = data.notice.main || '';
+                document.getElementById('noticeSub').value = data.notice.sub || '';
+                document.getElementById('configPosterUrl').value = data.notice.posterUrl || '';
+                document.getElementById('configChatLink').value = data.notice.chatLink || '';
+                
+                if(data.notice.posterUrl) document.getElementById('posterDisplay').innerHTML = `<img src="${data.notice.posterUrl}">`;
+                if(data.notice.chatLink) document.getElementById('kakaoLinkDisplay').href = data.notice.chatLink;
+            }
+
+            if (warData.length === 0) {
+                for(let i=1; i<=5; i++) warData.push({ name: `정예성 ${i}`, type: 'Elite', score: 0, checked: false });
+                for(let i=1; i<=30; i++) warData.push({ name: `일반성 ${i}`, type: 'Normal', score: 0, checked: false });
+            }
+
+            loadMembersUi();
+            renderAllTables();
+            renderWarTable();
+        } catch (e) { alert("연결 실패: " + e.message); } finally { showLoading(false); }
+    }
+
+    function saveNoticesToServer() {
+        const payload = {
+            main: document.getElementById('noticeMain').value,
+            sub: document.getElementById('noticeSub').value,
+            posterUrl: document.getElementById('configPosterUrl').value,
+            chatLink: document.getElementById('configChatLink').value
+        };
+        postToServer('notice', payload);
+    }
+
+    function postToServer(type, payload, key) {
+        showLoading(true);
+        fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ type, payload, key }) })
+        .then(r => r.json()).then(d => {
+            if(d.result === 'success') alert('✅ 저장 완료!'); else alert('실패: ' + d.message);
+        }).catch(e => alert('통신 오류')).finally(() => showLoading(false));
+    }
+
+    function saveMembersToServer() { postToServer('members', members); }
+    function saveWeeklyDataToServer() { postToServer('weeklyData', weeklyData, `${currentYear}_${currentMonth}_${currentWeek}`); }
+    function saveWarData() { postToServer('warData', warData); }
+
+    function openTab(id) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    function renderWarTable() {
+        const tbody = document.getElementById('warTableBody');
+        tbody.innerHTML = '';
+        let totalScore = 0;
+
+        warData.forEach((castle, index) => {
+            const isElite = castle.type === 'Elite';
+            const winPoint = isElite ? 1500 : 750;
+            const highlight = castle.checked ? 'war-target' : '';
+
+            if (castle.checked) totalScore += winPoint;
+
+            tbody.innerHTML += `
+                <tr class="${highlight}" id="warRow_${index}">
+                    <td style="text-align:center;"><input type="checkbox" onchange="toggleWarCheck(${index}, this.checked)" ${castle.checked ? 'checked' : ''} style="width:18px; height:18px;"></td>
+                    <td><input type="text" value="${castle.name}" onchange="updateWarName(${index}, this.value)" style="border:none; width:100%; background:transparent;"></td>
+                    <td style="text-align:center;"><span class="type-badge ${isElite ? 'elite' : 'normal'}" onclick="toggleWarType(${index})">${isElite ? '🔥정예' : '🛡️일반'}</span></td>
+                    <td style="text-align:center;">${winPoint}</td>
+                    <td><input type="number" class="num-input" value="${castle.score}" placeholder="0" onchange="updateWarScore(${index}, this.value)"> 만</td>
+                </tr>`;
+        });
+        document.getElementById('totalWarScore').innerText = totalScore.toLocaleString();
+    }
+
+    function toggleWarCheck(index, checked) { warData[index].checked = checked; renderWarTable(); }
+    function toggleWarType(index) { warData[index].type = warData[index].type === 'Elite' ? 'Normal' : 'Elite'; renderWarTable(); }
+    function updateWarName(index, val) { warData[index].name = val; }
+    function updateWarScore(index, val) { warData[index].score = parseInt(val) || 0; }
+    
+    function addWarCastleManual() {
+        const type = document.getElementById('newCastleType').value;
+        const name = document.getElementById('newCastleName').value || '새 성';
+        warData.push({ name: name, type: type, score: 0, checked: false });
+        renderWarTable();
+        document.getElementById('newCastleName').value = '';
+    }
+    
+    function removeSelectedWarCastles() {
+        if(confirm(`선택한 성을 삭제하시겠습니까?`)) {
+            warData = warData.filter(c => !c.checked);
+            renderWarTable();
+        }
+    }
+    function resetWarData() {
+        if(confirm('전체 초기화 하시겠습니까?')) { warData = []; renderWarTable(); }
+    }
+
+    function processWarOCR() {
+        const input = document.getElementById('warOcrInput').value.trim();
+        if(!input) return;
+        const lines = input.split('\n');
+        let cnt = 0;
+        lines.forEach(line => {
+            const parts = line.split(/[\t\s]+/);
+            if(parts.length >= 2) {
+                const score = parseInt(parts[parts.length-1]);
+                const name = parts.slice(0, parts.length-1).join(' ');
+                const target = warData.find(c => c.name === name || c.name.includes(name));
+                if(target) { target.score = score; cnt++; }
+            }
+        });
+        renderWarTable();
+        alert(`${cnt}개 성의 점수가 입력되었습니다!`);
+        document.getElementById('warOcrInput').value = '';
+    }
+
+    function processOCRData() {
+        const input = document.getElementById('ocrInputArea').value.trim().split('\n');
+        const type = document.getElementById('ocrDataType').value;
+        const currentDay = document.getElementById('ocrDaySelect').value;
+        
+        const days = ['mon','tue','wed','thu','fri','sat','sun'];
+        const currIdx = days.indexOf(currentDay);
+        const prevDay = currIdx > 0 ? days[currIdx - 1] : null;
+
+        let cnt = 0;
+        let notFound = [];
+
+        input.forEach(line => {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) return;
+
+            const parts = trimmedLine.split(/\s+/);
+            const lastPart = parts[parts.length - 1];
+            
+            let name, val;
+            let isValidValue = false;
+
+            if (type === 'stage') {
+                isValidValue = /\d/.test(lastPart) && parts.length >= 2;
+            } else {
+                isValidValue = !isNaN(lastPart) && parts.length >= 2;
+            }
+
+            if (isValidValue) {
+                val = lastPart;
+                name = parts.slice(0, parts.length - 1).join(' ');
+            } else {
+                name = trimmedLine;
+                val = null;
+            }
+
+            const isMember = members.some(m => m.id === name);
+
+            if (isMember) {
+                if (!weeklyData[name]) weeklyData[name] = { daily: {} };
+
+                if (val !== null) {
+                    if (type === 'stage') {
+                        weeklyData[name].stage = val;
+                    } else {
+                        if(!weeklyData[name].daily[currentDay]) weeklyData[name].daily[currentDay] = {};
+                        weeklyData[name].daily[currentDay][type.split('_')[1]] = parseInt(val)||0;
+                    }
+                    cnt++;
+                } else if (prevDay && type !== 'stage') {
+                    const prevVal = weeklyData[name].daily[prevDay]?.[type.split('_')[1]];
+                    if (prevVal !== undefined) {
+                        if(!weeklyData[name].daily[currentDay]) weeklyData[name].daily[currentDay] = {};
+                        weeklyData[name].daily[currentDay][type.split('_')[1]] = prevVal;
+                        cnt++;
+                    }
+                }
+            } else {
+                notFound.push(name);
+            }
+        });
+        
+        renderAllTables();
+        let msg = `${cnt}건 적용 완료.`;
+        if (notFound.length > 0) msg += `\n\n⚠️ 미등록 멤버 제외 (${notFound.length}명):\n${notFound.join(', ')}`;
+        alert(msg);
+        if(notFound.length === 0) document.getElementById('ocrInputArea').value = '';
+    }
+
+    function getAvailableMembers(group, refDay, reserveStr) {
+        const reserves = reserveStr.split(/[\s,]+/).filter(s=>s.trim());
+        let allMembers = members.filter(m => m.group === group).map(m => {
+            const power = (weeklyData[m.id]?.daily?.[refDay]?.battle) || 0;
+            return { id: m.id, power: power, isReserve: reserves.includes(m.id) };
+        });
+        const activePool = allMembers.filter(m => m.power > 0 && !m.isReserve).sort((a,b) => b.power - a.power);
+        const reservePool = allMembers.filter(m => m.isReserve).map(m => m.id);
+        return { active: activePool, reserve: reservePool };
+    }
+
+    function analyzeWarAI(targetGroup) {
+        const refDay = document.getElementById('warRefDate').value;
+        const groupName = targetGroup === 'Main' ? '이데아' : '삼데아';
+        const reserveInputId = targetGroup === 'Main' ? 'reserveMain' : 'reserveSub';
+        const { active: availableMembers, reserve: reserveList } = getAvailableMembers(targetGroup, refDay, document.getElementById(reserveInputId).value);
+
+        if(availableMembers.length === 0 && reserveList.length === 0) { alert(`${groupName}의 ${refDay} 데이터가 없습니다.`); return; }
+
+        const totalPower = availableMembers.reduce((sum, m) => sum + m.power, 0);
+        let candidates = warData.filter(c => c.score > 0).map(c => {
+            const hp = c.score * 10000;
+            const winPoint = c.type === 'Elite' ? 1500 : 750;
+            return { ...c, hp: hp, eff: winPoint / hp };
+        }).sort((a,b) => b.eff - a.eff || a.hp - b.hp);
+
+        let assignmentList = [];
+        let remainingPower = totalPower;
+
+        candidates.forEach(castle => {
+            if (remainingPower >= castle.hp) {
+                let allocatedMembers = [];
+                let currentDamage = 0;
+                while(currentDamage < castle.hp && availableMembers.length > 0) {
+                    let m = availableMembers.shift();
+                    allocatedMembers.push(m);
+                    currentDamage += m.power;
+                }
+                if (currentDamage >= castle.hp) {
+                    remainingPower -= currentDamage;
+                    assignmentList.push({ castle: castle.name, hp: castle.hp, type: castle.type, members: allocatedMembers, totalDmg: currentDamage });
+                } else {
+                    availableMembers.unshift(...allocatedMembers);
+                }
+            }
+        });
+
+        let report = `[⚔️ ${groupName} 독립 공략 분석]\n(가용 전력: ${(totalPower/10000).toFixed(0)}만)\n\n`;
+        if (reserveList.length > 0) {
+            report += `🔥 [핵심 예비 전력] ${reserveList.length}명\n: ${reserveList.join(', ')}\n\n--------------------------------\n\n`;
+        }
+        let totalWinPoints = 0;
+        assignmentList.forEach(item => {
+            const winP = item.type === 'Elite' ? 1500 : 750;
+            totalWinPoints += winP;
+            const mNames = item.members.map(m => m.id).join(', ');
+            report += `🏰 ${item.castle} [${item.type === 'Elite'?'🔥정예':'🛡️일반'}] (획득: ${winP}점)\n - 공격조 합계: ${(item.totalDmg/10000).toFixed(0)}만 (목표: ${(item.hp/10000).toFixed(0)}만)\n - 공격조: ${mNames}\n\n`;
+        });
+        report += `🎯 예상 획득 점수: ${totalWinPoints.toLocaleString()}점\n\n`;
+        if(availableMembers.length > 0) report += `⚠️ 잔여 인원 (${availableMembers.length}명): ${availableMembers.map(m=>m.id).join(', ')}`;
+        else report += `✅ 일반 공격조 전원 투입 완료`;
+        document.getElementById('warStrategyResult').value = report;
+    }
+
+    function analyzeWarIntegrated() {
+        const refDay = document.getElementById('warRefDate').value;
+        const mainData = getAvailableMembers('Main', refDay, document.getElementById('reserveMain').value);
+        let mainMembers = mainData.active; const mainReserves = mainData.reserve;
+        const subData = getAvailableMembers('Sub', refDay, document.getElementById('reserveSub').value);
+        let subMembers = subData.active; const subReserves = subData.reserve;
+
+        if(mainMembers.length === 0 && subMembers.length === 0 && mainReserves.length === 0 && subReserves.length === 0) { alert(`${refDay} 데이터가 없습니다.`); return; }
+
+        let candidates = warData.filter(c => c.score > 0).map(c => {
+            const hp = c.score * 10000;
+            const winPoint = c.type === 'Elite' ? 1500 : 750;
+            return { ...c, hp: hp, eff: winPoint / hp };
+        }).sort((a,b) => b.eff - a.eff || a.hp - b.hp);
+
+        let mainResults = [], subResults = [], usedCastles = new Set();
+        warData.forEach(c => c.checked = false);
+
+        candidates.forEach(castle => {
+            let needed = castle.hp;
+            if (mainMembers.length > 0) {
+                let tempMembers = [...mainMembers], tempDamage = 0, tempSquad = [];
+                while(tempDamage < needed && tempMembers.length > 0) {
+                    let m = tempMembers.shift();
+                    tempSquad.push(m);
+                    tempDamage += m.power;
+                }
+                if (tempDamage >= needed) {
+                    mainMembers = tempMembers;
+                    usedCastles.add(castle.name);
+                    mainResults.push({ castle: castle.name, type: castle.type, hp: castle.hp, dmg: tempDamage, members: tempSquad });
+                    const real = warData.find(c => c.name === castle.name);
+                    if(real) real.checked = true;
+                }
+            }
+        });
+
+        candidates.forEach(castle => {
+            if (!usedCastles.has(castle.name)) {
+                let needed = castle.hp;
+                if (subMembers.length > 0) {
+                    let tempMembers = [...subMembers], tempDamage = 0, tempSquad = [];
+                    while(tempDamage < needed && tempMembers.length > 0) {
+                        let m = tempMembers.shift();
+                        tempSquad.push(m);
+                        tempDamage += m.power;
+                    }
+                    if (tempDamage >= needed) {
+                        subMembers = tempMembers;
+                        subResults.push({ castle: castle.name, type: castle.type, hp: castle.hp, dmg: tempDamage, members: tempSquad });
+                        const real = warData.find(c => c.name === castle.name);
+                        if(real) real.checked = true;
+                    }
+                }
+            }
+        });
+
+        renderWarTable();
+
+        let report = `[⚔️ 문파대전 통합 전략]\n(기준: ${refDay} 전력)\n\n`;
+        if (mainReserves.length > 0 || subReserves.length > 0) {
+            report += `🔥 [핵심 예비 전력]\n`;
+            if(mainReserves.length > 0) report += `🦁 이데아: ${mainReserves.join(', ')}\n`;
+            if(subReserves.length > 0) report += `🐯 삼데아: ${subReserves.join(', ')}\n`;
+            report += `--------------------------------\n\n`;
+        }
+
+        let totalWin = 0;
+        report += `🦁 이데아 (본가)\n`;
+        if (mainResults.length === 0) report += `- 공략 가능한 성이 없습니다.\n`;
+        mainResults.forEach(r => {
+            const winP = r.type === 'Elite' ? 1500 : 750;
+            totalWin += winP;
+            report += `🏰 ${r.castle} [${r.type === 'Elite'?'🔥정예':'🛡️일반'}] (획득: ${winP}점)\n - 공격조 합계: ${(r.dmg/10000).toFixed(0)}만 (목표: ${(r.hp/10000).toFixed(0)}만)\n - 공격조: ${r.members.map(m=>m.id).join(', ')}\n\n`;
+        });
+
+        report += `\n🐯 삼데아 (속가)\n`;
+        if (subResults.length === 0) report += `- 공략 가능한 성이 없습니다.\n`;
+        subResults.forEach(r => {
+            const winP = r.type === 'Elite' ? 1500 : 750;
+            totalWin += winP;
+            report += `🏰 ${r.castle} [${r.type === 'Elite'?'🔥정예':'🛡️일반'}] (획득: ${winP}점)\n - 공격조 합계: ${(r.dmg/10000).toFixed(0)}만 (목표: ${(r.hp/10000).toFixed(0)}만)\n - 공격조: ${r.members.map(m=>m.id).join(', ')}\n\n`;
+        });
+
+        report += `🎯 총 예상 획득 점수: ${totalWin.toLocaleString()}점\n`;
+        if (mainMembers.length > 0) report += `\n🦁 이데아 잔여: ${mainMembers.map(m=>m.id).join(', ')}`;
+        if (subMembers.length > 0) report += `\n🐯 삼데아 잔여: ${subMembers.map(m=>m.id).join(', ')}`;
+        document.getElementById('warStrategyResult').value = report;
+    }
+
+    function renderAllTables() { renderTable('Main'); renderTable('Sub'); }
+    function renderTable(group) {
+        const table = document.getElementById(`inputTable${group}`);
+        const isTodayOnly = document.getElementById('todayOnlyToggle').checked;
+        let dayHeaders = '', dataHeaders = '';
+        const visibleDays = isTodayOnly ? DAYS.filter((d, i) => isToday(i + 1)) : DAYS;
+        const visibleDaysKr = isTodayOnly ? DAYS_KR.filter((d, i) => isToday(i + 1)) : DAYS_KR;
+
+        visibleDaysKr.forEach(d => dayHeaders += `<th colspan="3">${d}요일</th>`);
+        visibleDays.forEach(d => dataHeaders += `<th>대전</th><th>공적</th><th>출석</th>`);
+
+        let html = `<thead><tr><th class="col-fixed-id" rowspan="2">ID</th><th rowspan="2" style="min-width:60px">스테이지</th>${dayHeaders}<th colspan="3">합계</th></tr><tr>${dataHeaders}<th>대전</th><th>공적</th><th>출석</th></tr></thead><tbody>`;
+
+        let weekSums = { b:0, c:0, a:0 }, daySums = {}; 
+        DAYS.forEach(d => daySums[d] = {b:0, c:0, a:0});
+
+        members.filter(m => m.group === group).forEach(m => {
+            const dData = weeklyData[m.id] || { daily: {} };
+            let rowSum = { b:0, c:0, a:0 };
+            
+            DAYS.forEach(d => {
+                const info = dData.daily[d] || { battle:0, contrib:0, attend:0 };
+                const b = parseInt(info.battle||0), c = parseInt(info.contrib||0), a = parseInt(info.attend||0);
+                rowSum.b += b; rowSum.c += c; rowSum.a += a;
+                daySums[d].b += b; daySums[d].c += c; daySums[d].a += a;
+            });
+            weekSums.b += rowSum.b; weekSums.c += rowSum.c; weekSums.a += rowSum.a;
+
+            html += `<tr><td class="col-fixed-id"><strong>${m.id}</strong></td>
+                <td><input type="text" class="num-input" value="${dData.stage||''}" onchange="upData('${m.id}','stage',this.value)" style="width:80px;"></td>`;
+            
+            visibleDays.forEach(d => {
+                const info = dData.daily[d] || { battle:0, contrib:0, attend:0 };
+                html += `<td><input type="number" class="num-input" value="${info.battle||''}" placeholder="0" onchange="upDaily('${m.id}','${d}','battle',this.value)"></td>
+                    <td><input type="number" class="num-input" value="${info.contrib||''}" placeholder="0" onchange="upDaily('${m.id}','${d}','contrib',this.value)"></td>
+                    <td><input type="number" class="num-input" value="${info.attend||''}" placeholder="-" min="0" max="1" onchange="upDaily('${m.id}','${d}','attend',this.value)"></td>`;
+            });
+            html += `<td style="background:#f9f9f9; font-weight:bold;">${rowSum.b.toLocaleString()}</td><td style="background:#f9f9f9;">${rowSum.c}</td><td style="background:#f9f9f9;">${rowSum.a}</td></tr>`;
+        });
+        table.innerHTML = html;
+    }
+
+    function upData(id, f, v) { weeklyData[id][f] = v; }
+    function upDaily(id, d, f, v) { weeklyData[id].daily[d][f] = parseInt(v)||0; }
+    function isToday(dayIndex) { let t = new Date().getDay(); if (t === 0) t = 7; return dayIndex === t; }
+
+    function initSelectors() {
+        const y=document.getElementById('yearSelect'), m=document.getElementById('monthSelect'), w=document.getElementById('weekSelect');
+        const rankingM = document.getElementById('targetRankingMonth');
+
+        const today = new Date();
+        for(let i=today.getFullYear()-1; i<=today.getFullYear()+1; i++) y.add(new Option(i,i));
+        for(let i=1; i<=12; i++) {
+            m.add(new Option(i,i));
+            rankingM.add(new Option(i + '월', i));
+        }
+        for(let i=1; i<=5; i++) w.add(new Option(i,i));
+        
+        y.value = today.getFullYear(); 
+        m.value = today.getMonth()+1;
+        rankingM.value = today.getMonth()+1;
+        
+        const date = today.getDate();
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        let startDay = firstDayOfMonth.getDay(); if (startDay === 0) startDay = 7; 
+        const weekNo = Math.ceil((date + startDay - 1) / 7);
+        w.value = weekNo;
+
+        const fillDays = (id) => {
+            const sel = document.getElementById(id); if(!sel) return; sel.innerHTML = '';
+            DAYS_KR.forEach((d, i) => sel.add(new Option(d + '요일', DAYS[i])));
+            let t = new Date().getDay(); if(t===0) t=7; sel.selectedIndex = t-1;
+        };
+        ['ocrDaySelect','batchDaySelect','kakaoDaySelect','squadDaySelect','warRefDate'].forEach(fillDays);
+        [y,m,w].forEach(s => s.addEventListener('change', fetchServerData));
+    }
+
+    function processBatchData() {
+        const day = document.getElementById('batchDaySelect').value;
+        const type = document.getElementById('batchTypeSelect').value;
+        const input = document.getElementById('batchInputArea').value;
+        const absent = input.split(/[\s,]+/).filter(s=>s.trim());
+        const target = (type==='contrib')?3:1;
+        if(!confirm(`[${day} ${type}] 일괄 처리?\n- 미참 ${absent.length}명: 0점\n- 나머지: ${target}점`)) return;
+        members.forEach(m => {
+            if(!weeklyData[m.id]) weeklyData[m.id] = { daily: {} };
+            if(!weeklyData[m.id].daily[day]) weeklyData[m.id].daily[day] = {};
+            weeklyData[m.id].daily[day][type] = absent.includes(m.id) ? 0 : target;
+        });
+        renderAllTables();
+        alert('완료! [서버 저장]을 눌러주세요.');
+    }
+
+    function generateKakaoText() {
+        const month = document.getElementById('monthSelect').value;
+        const week = document.getElementById('weekSelect').value;
+        const daySelect = document.getElementById('kakaoDaySelect');
+        const dayKey = daySelect.value;
+        const dayText = daySelect.options[daySelect.selectedIndex].text;
+
+        let report = `[📅 ${month}월 ${week}주 ${dayText} 현황]\n\n`;
+
+        const groups = [
+            { id: 'Main', name: '🦁 이데아' },
+            { id: 'Sub', name: '🐯 삼데아' }
+        ];
+
+        groups.forEach(g => {
+            report += `${g.name}\n`;
+            
+            const groupMembers = members.filter(m => m.group === g.id);
+            
+            let noAttend = [];
+            let noBattle = [];
+            let noContrib = [];
+
+            groupMembers.forEach(m => {
+                const dData = weeklyData[m.id]?.daily?.[dayKey] || { battle: 0, contrib: 0, attend: 0 };
+                
+                if (!dData.attend || dData.attend === 0) noAttend.push(m.id);
+                if (!dData.battle || dData.battle === 0) noBattle.push(m.id);
+                if (!dData.contrib || dData.contrib === 0) noContrib.push(m.id);
+            });
+
+            const formatLine = (label, list) => {
+                const content = list.length === 0 ? "완료" : list.join(', ');
+                return `- ${label}: ${content}`;
+            };
+
+            report += `${formatLine('출석X', noAttend)}\n`;
+            report += `${formatLine('대전X', noBattle)}\n`;
+            report += `${formatLine('공적X', noContrib)}\n\n`;
+        });
+
+        document.getElementById('kakaoResultArea').value = report;
+    }
+
+    function addSquadRow(group, name='', target='') {
+        squadCounts[group]++;
+        const div = document.createElement('div');
+        div.className='squad-row'; div.id=`squadRow_${group}_${squadCounts[group]}`;
+        div.innerHTML=`<span>${squadCounts[group]}조:</span><input type="text" value="${name}" class="squad-name" style="width:60px"><input type="number" value="${target}" class="squad-target" style="width:80px">`;
+        document.getElementById(`squadConfigContainer${group}`).appendChild(div);
+    }
+    function removeSquadRow(g) { if(squadCounts[g]>0) { document.getElementById(`squadRow_${g}_${squadCounts[g]}`).remove(); squadCounts[g]--; } }
+    
+    function generateSquadCustom() {
+        const day = document.getElementById('squadDaySelect').value;
+        const exMain = document.getElementById('excludeMain').value.split(/[\s,]+/).filter(s=>s);
+        const exSub = document.getElementById('excludeSub').value.split(/[\s,]+/).filter(s=>s);
+        let res = `[⚔️ 조편성 결과]\n\n`;
+        ['Main','Sub'].forEach(g => {
+            let cf = [];
+            for(let i=1; i<=squadCounts[g]; i++) {
+                const r = document.getElementById(`squadRow_${g}_${i}`);
+                if(r) cf.push({name:r.querySelector('.squad-name').value, target:parseInt(r.querySelector('.squad-target').value)||0, members:[], currentSum:0});
+            }
+            if(cf.length > 0) {
+                res += (g==='Main'?'🦁 이데아':'🐯 삼데아') + '\n';
+                let cands = members.filter(m=>m.group===g && !((g==='Main'?exMain:exSub).includes(m.id))).map(m=>({id:m.id, s:(weeklyData[m.id]?.daily?.[day]?.battle)||0})).sort((a,b)=>b.s-a.s);
+                cands.forEach(p => {
+                    let best = cf.reduce((prev, curr) => (prev.target-prev.currentSum) > (curr.target-curr.currentSum) ? prev : curr);
+                    best.members.push(p.id); best.currentSum += p.s;
+                });
+                cf.forEach(b => res += `[${b.name}] 합:${(b.currentSum/10000).toFixed(0)}만\n${b.members.join(', ')}\n`);
+                res += '\n';
+            }
+        });
+        document.getElementById('squadResultArea').value = res;
+    }
+
+    function moveMember(i) {
+        const m = members[i];
+        const newGroup = m.group === 'Main' ? 'Sub' : 'Main';
+        if(confirm(`[${m.id}] 님을 이동하시겠습니까?`)) {
+            m.group = newGroup; saveMembersToServer(); loadMembersUi(); renderAllTables();
+        }
+    }
+
+    function loadMembersUi() {
+        ['Main','Sub'].forEach(g => {
+            const ul = document.getElementById(`memberList${g}`); ul.innerHTML = '';
+            const list = members.filter(m => m.group === g);
+            document.getElementById(`${g.toLowerCase()}Count`).innerText = list.length;
+            list.forEach((m, i) => {
+                const realIdx = members.findIndex(x => x.id === m.id);
+                const joinStr = m.joinDate ? `<span style="font-size:11px; color:#888;">(${m.joinDate})</span>` : '';
+                ul.innerHTML += `<li style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #eee;">
+                    <span>${m.id} ${joinStr}</span>
+                    <div>
+                        <button onclick="moveMember(${realIdx})" class="btn-outline" style="padding:4px 8px; font-size:11px;">⇄</button>
+                        <button onclick="editMember(${realIdx})" class="btn-primary" style="padding:4px 8px; font-size:11px;">✏️</button>
+                        <button onclick="removeMember(${realIdx})" class="btn-danger" style="padding:4px 8px; font-size:11px;">🗑️</button>
+                    </div>
+                </li>`;
+            });
+        });
+    }
+    
+    function addMember() {
+        const id = document.getElementById('newMemberName').value.trim();
+        const join = document.getElementById('newMemberJoinDate').value || new Date().toISOString().split('T')[0];
+        const group = document.getElementById('newMemberGroup').value;
+        if(id && !members.some(m=>m.id===id)) { 
+            members.push({id, group, joinDate: join}); loadMembersUi(); 
+            document.getElementById('newMemberName').value=''; 
+        } else { alert('이름을 입력하지 않았거나 중복입니다.'); }
+    }
+
+    function editMember(i) {
+        const m = members[i];
+        const n = prompt('새 닉네임:', m.id);
+        if(n) {
+            if (n !== m.id && !members.some(x=>x.id===n)) {
+                const old = m.id; m.id = n;
+                if(weeklyData[old]) { weeklyData[n] = weeklyData[old]; delete weeklyData[old]; }
+            }
+            const d = prompt('가입일 수정:', m.joinDate || ''); if(d !== null) m.joinDate = d;
+            saveMembersToServer(); saveWeeklyDataToServer(); loadMembersUi(); renderAllTables();
+        }
+    }
+    function removeMember(i) { if(confirm('삭제?')) { members.splice(i, 1); loadMembersUi(); } }
+    function resetCurrentWeekData() { if(confirm('초기화?')) { weeklyData={}; members.forEach(m=>weeklyData[m.id]={stage:'',daily:{}}); saveWeeklyDataToServer(); renderAllTables(); } }
+    
+    async function getMonthlyStats(year, month) {
+        const promises = [];
+        for(let w=1; w<=5; w++) promises.push(fetch(`${GAS_URL}?key=${year}_${month}_${w}`).then(r => r.json()));
+        const results = await Promise.all(promises);
+        let stats = {};
+        members.forEach(m => stats[m.id] = { ...m, b:0, c:0, a:0, bd:0, s:0, sStr:'-' });
+        results.forEach(d => {
+            const wd = d.weeklyData || {};
+            Object.entries(wd).forEach(([id, info]) => {
+                if(!stats[id]) return;
+                DAYS.forEach(day => {
+                    const i = info.daily[day] || {};
+                    stats[id].b += (i.battle||0); 
+                    if(i.battle > 0) stats[id].bd++; 
+                    stats[id].c += (i.contrib||0); 
+                    stats[id].a += (i.attend||0);
+                });
+                const sp = (info.stage||'0-0').split('-').map(Number);
+                const sc = (sp[0]||0)*1000+(sp[1]||0);
+                if(sc > stats[id].s) { stats[id].s = sc; stats[id].sStr = info.stage; }
+            });
+        });
+        return stats;
+    }
+    
+    async function calculateMonthlyRanking() {
+        showLoading(true);
+        try {
+            const year = document.getElementById('yearSelect').value;
+            const month = document.getElementById('targetRankingMonth').value;
+            
+            const stats = await getMonthlyStats(year, month);
+            
+            monthlyRankingData = Object.values(stats).sort((a,b) => {
+                if (b.b !== a.b) return b.b - a.b;
+                if (b.c !== a.c) return b.c - a.c;
+                if (b.a !== a.a) return b.a - a.a;
+                return b.s - a.s;
+            });
+
+            const tbody = document.getElementById('rankingTableBody'); 
+            tbody.innerHTML = '';
+            
+            monthlyRankingData.forEach((d, i) => {
+                const badge = d.group === 'Main' ? '🦁' : '🐯';
+                tbody.innerHTML += `<tr>
+                    <td>${i+1}</td>
+                    <td>${badge}</td>
+                    <td class="col-fixed-id">${d.id}</td>
+                    <td>${d.sStr}</td>
+                    <td style="text-align:right; font-weight:bold;">${d.b.toLocaleString()}</td>
+                    <td>${d.c}</td>
+                    <td>${d.a}</td>
+                </tr>`;
+            });
+            changeLowLimit(5);
+        } catch(e) { 
+            alert('오류: ' + e.message); 
+            console.error(e);
+        } finally { 
+            showLoading(false); 
+        }
+    }
+
+    function isNewbie(joinDateStr) {
+        if (!joinDateStr) return false;
+        const today = new Date(); const join = new Date(joinDateStr);
+        return Math.ceil(Math.abs(today - join) / (1000 * 60 * 60 * 24)) <= 7;
+    }
+
+    function changeLowLimit(n) {
+        currentLowLimit = n;
+        if(monthlyRankingData.length > 0) {
+            renderLowPerformers('Main', 'lowPerformerListMain');
+            renderLowPerformers('Sub', 'lowPerformerListSub');
+        }
+    }
+
+    function renderLowPerformers(group, elementId) {
+        const el = document.getElementById(elementId); el.innerHTML = '';
+        const groupMembers = monthlyRankingData.filter(m => m.group === group && !isNewbie(m.joinDate));
+        const sorted = [...groupMembers].sort((a,b) => a.bd - b.bd || a.c - b.c || a.a - b.a).slice(0, currentLowLimit);
+        if (sorted.length === 0) { el.innerHTML = '<li>👏 저조자 없음</li>'; return; }
+        sorted.forEach((m, i) => {
+            el.innerHTML += `<li>${i+1}. <b>${m.id}</b> (대전:${m.bd}일/공적:${m.c}/출석:${m.a})</li>`;
+        });
+    }
+
+    function generateLowPerformerText(group) {
+        const groupMembers = monthlyRankingData.filter(m => m.group === group && !isNewbie(m.joinDate));
+        const sorted = [...groupMembers].sort((a,b) => a.bd - b.bd || a.c - b.c || a.a - b.a).slice(0, currentLowLimit);
+        let t = `[📉 ${group} 활동 저조자]\n`;
+        sorted.forEach((m, i) => t += `${i+1}. ${m.id} (대전:${m.bd}일/공적:${m.c}/출석:${m.a})\n`);
+        document.getElementById(group === 'Main' ? 'lowResultMain' : 'lowResultSub').value = t;
+        alert('생성 완료');
+    }
+
+    function generateRankingKakaoText() {
+        const m = document.getElementById('targetRankingMonth').value;
+        let t = `[🏆 ${m}월 종합 랭킹]\n(기준: 대전 > 공적 > 출석 > 스테이지)\n\n`;
+        monthlyRankingData.forEach((d, i) => {
+            t += `${i+1}위 ${d.id}\n`;
+            t += `└ 문파대전${(d.b/10000).toFixed(0)}만 / 문파공적${d.c} / 출석${d.a} / 스테이지${d.sStr}\n`;
+        });
+        document.getElementById('rankingKakaoResult').value = t;
+    }
+
+    async function calculateGrowthAnalysis() {
+        showLoading(true);
+        try {
+            const curY = parseInt(document.getElementById('yearSelect').value);
+            const curM = parseInt(document.getElementById('targetRankingMonth').value);
+            
+            const prevY = curM === 1 ? curY - 1 : curY;
+            const prevM = curM === 1 ? 12 : curM - 1;
+
+            const [curStats, prevStats] = await Promise.all([getMonthlyStats(curY, curM), getMonthlyStats(prevY, prevM)]);
+            
+            let growthList = [];
+            Object.keys(curStats).forEach(id => {
+                const cur = curStats[id];
+                const prev = prevStats[id] || { b:0, c:0, a:0, s:0, sStr:'-' };
+                
+                const battleDiff = cur.b - prev.b;
+                const contribDiff = cur.c - prev.c;
+                const attendDiff = cur.a - prev.a;
+
+                if (cur.b > 0) {
+                    growthList.push({ 
+                        id: id, 
+                        group: cur.group, 
+                        bDiff: battleDiff, 
+                        cDiff: contribDiff, 
+                        aDiff: attendDiff,
+                        prevS: prev.sStr, 
+                        curS: cur.sStr 
+                    });
+                }
+            });
+
+            growthList.sort((a, b) => b.bDiff - a.bDiff);
+
+            let report = `[📈 ${prevM}월 ➡ ${curM}월 성장 리포트]\n\n`;
+            
+            growthList.forEach(d => {
+                const bSign = d.bDiff >= 0 ? '+' : '';
+                const cSign = d.cDiff >= 0 ? '+' : '';
+                const aSign = d.aDiff >= 0 ? '+' : '';
+                
+                // [수정된 부분] 대전 점수 직관적 표시 (상승/감소)
+                const bText = d.bDiff >= 0 ? `${bSign}${(d.bDiff/10000).toFixed(0)}만점 상승` : `${(Math.abs(d.bDiff)/10000).toFixed(0)}만점 감소`;
+                
+                const cText = d.cDiff >= 0 ? `${cSign}${d.cDiff}회 더 참여` : `${d.cDiff}회 감소`;
+                const aText = d.aDiff >= 0 ? `${aSign}${d.aDiff}회 더 출석` : `${d.aDiff}회 감소`;
+
+                report += `👤 ${d.id}\n`;
+                report += ` ⚔️ 문파대전: ${bText} (전월대비)\n`;
+                report += ` 🛡️ 문파공적: ${cText} (전월대비)\n`;
+                report += ` 📅 출석체크: ${aText} (전월대비)\n`;
+                report += ` ⛳ 스테이지: ${d.prevS} ➡ ${d.curS}\n\n`;
+            });
+
+            document.getElementById('growthKakaoResult').value = report;
+        } catch(e) { 
+            alert("분석 실패: " + e.message); 
+        } finally { 
+            showLoading(false); 
+        }
+    }
+
+    function copyKakaoText(id) { document.getElementById(id).select(); document.execCommand('copy'); alert('복사완료'); }
+</script>
+</body>
+</html>
